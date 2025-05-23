@@ -6,6 +6,8 @@ from ovinc_client.core.constants import MAX_CHAR_LENGTH
 from ovinc_client.core.models import BaseModel
 from pydantic import BaseModel as PydanticBaseModel
 
+from apps.oauth.constants import TrustLevelChoices
+
 
 class OAuthUserInfo(PydanticBaseModel):
     id: int
@@ -25,14 +27,21 @@ class UserProfile(BaseModel):
 
     id = models.BigAutoField(gettext_lazy("ID"), primary_key=True)
     user = models.OneToOneField(
-        verbose_name=gettext_lazy("User"), to="account.User", on_delete=models.CASCADE, related_name="profiles"
+        verbose_name=gettext_lazy("User"),
+        to="account.User",
+        on_delete=models.CASCADE,
+        related_name="profile",
+        db_constraint=False,
     )
     email = models.CharField(gettext_lazy("Email"), max_length=MAX_CHAR_LENGTH)
     avatar = models.CharField(gettext_lazy("Avatar"), max_length=MAX_CHAR_LENGTH)
-    trust_level = models.SmallIntegerField(gettext_lazy("Trust Level"))
+    trust_level = models.SmallIntegerField(gettext_lazy("Trust Level"), choices=TrustLevelChoices.choices)
     api_key = models.CharField(gettext_lazy("API Key"), max_length=MAX_CHAR_LENGTH)
 
     class Meta:
         verbose_name = gettext_lazy("User Profile")
         verbose_name_plural = verbose_name
         ordering = ["id"]
+
+    def __str__(self) -> str:
+        return f"{self.user}"

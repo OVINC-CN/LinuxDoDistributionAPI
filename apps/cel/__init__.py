@@ -13,9 +13,9 @@ app.autodiscover_tasks()
 
 # Schedule Tasks
 app.conf.beat_schedule = {
-    "celery_debug": {
-        "task": "apps.cel.tasks.debug.celery_debug",
-        "schedule": crontab(minute="*"),
+    "do_stats": {
+        "task": "apps.vcd.tasks.do_stats",
+        "schedule": crontab(minute="*/5"),
         "args": (),
     },
 }

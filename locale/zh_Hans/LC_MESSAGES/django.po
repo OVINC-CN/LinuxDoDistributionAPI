@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-13 11:24+0800\n"
+"POT-Creation-Date: 2025-05-23 18:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,130 +18,254 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: apps/account/apps.py:8
-msgid "User Account"
-msgstr "用户账户"
-
-#: apps/account/constants.py:21
-msgid "Personal"
-msgstr "个人"
-
-#: apps/account/constants.py:22
-msgid "Platform"
-msgstr "平台"
-
-#: apps/account/constants.py:30
-msgid "Avatar"
-msgstr "头像"
-
-#: apps/account/constants.py:31
-msgid "Phone Number"
-msgstr "联系电话"
-
-#: apps/account/constants.py:32
-msgid "Mail Address"
-msgstr "邮件地址"
-
-#: apps/account/models.py:22
-msgid "Username Cannot be Empty"
-msgstr "用户名不能为空"
-
-#: apps/account/models.py:39
-msgid "username"
-msgstr "用户名"
-
-#: apps/account/models.py:43
-msgid "already in use"
-msgstr "已被占用"
-
-#: apps/account/models.py:45
-msgid "Nick Name"
-msgstr "用户昵称"
-
-#: apps/account/models.py:47
-msgid "User Type"
-msgstr "用户类型"
-
-#: apps/account/models.py:52
-msgid "Date Joined"
-msgstr "注册时间"
-
-#: apps/account/models.py:59
-msgid "User"
-msgstr "用户"
-
-#: apps/home/apps.py:8
 msgid "Home Module"
 msgstr "首页"
 
-#: apps/home/exceptions.py:8
 msgid "Language Code Invalid"
 msgstr "语言ID非法"
 
-#: apps/home/serializers.py:12
 msgid "Language Code"
 msgstr "语言ID"
 
-#: apps/trace/apps.py:11
-msgid "App Performance"
-msgstr "应用性能"
+msgid "Nick Name"
+msgstr "用户昵称"
 
-#: core/constants.py:30
+msgid "OAuth Module"
+msgstr "OAuth 模块"
+
+msgid "New User"
+msgstr "新用户"
+
+msgid "Basic User"
+msgstr "基本用户"
+
+msgid "User"
+msgstr "用户"
+
+msgid "Active User"
+msgstr "活跃用户"
+
+msgid "Leader"
+msgstr "领导者"
+
+msgid "User Inactive"
+msgstr "用户状态异常"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Email"
+msgstr "邮件"
+
+msgid "Avatar"
+msgstr "头像"
+
+msgid "Trust Level"
+msgstr "信任等级"
+
+msgid "API Key"
+msgstr "API 密钥"
+
+msgid "User Profile"
+msgstr "用户信息"
+
+msgid "invalid state"
+msgstr "未知的校验码"
+
+msgid "Virtual Content Distribution Module"
+msgstr "虚拟内容分发模块"
+
+msgid "Virtual Content Has Been Received"
+msgstr "已有领取记录"
+
+msgid "Virtual Content Is Disabled"
+msgstr "分发未开启"
+
+msgid "No Stock"
+msgstr "无库存"
+
+msgid "Already Received"
+msgstr "已领取"
+
+msgid "Received By Someone, Please Try Again"
+msgstr "抢占失败，请重试"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "Allowed Trust Levels"
+msgstr "允许的信任等级"
+
+msgid "Start Time"
+msgstr "开始时间"
+
+msgid "End Time"
+msgstr "结束时间"
+
+msgid "Creator"
+msgstr "创建人"
+
+msgid "Created Time"
+msgstr "创建时间"
+
+msgid "Updated Time"
+msgstr "更新时间"
+
+msgid "Virtual Content"
+msgstr "虚拟内容"
+
+msgid "Content"
+msgstr "内容"
+
+msgid "Virtual Content Item"
+msgstr "虚拟内容实例"
+
+msgid "Receiver"
+msgstr "接收人"
+
+msgid "Received Time"
+msgstr "接收时间"
+
+msgid "Receive History"
+msgstr "接收历史"
+
+msgid "Count"
+msgstr "计数"
+
+msgid "User Receive Stats"
+msgstr "用户接收统计"
+
+msgid "Items"
+msgstr "项目"
+
+msgid "Is Expired"
+msgstr "是否过期"
+
+msgid "Yes"
+msgstr "是"
+
+msgid "No"
+msgstr "否"
+
+msgid "User Account"
+msgstr "用户账户"
+
+msgid "Personal"
+msgstr "个人"
+
+msgid "Platform"
+msgstr "平台"
+
+msgid "Phone Number"
+msgstr "联系电话"
+
+msgid "Mail Address"
+msgstr "邮件地址"
+
+msgid "Code Verify Failed"
+msgstr "Code 验证失败"
+
+msgid "Username Cannot be Empty"
+msgstr "用户名不能为空"
+
+msgid "username"
+msgstr "用户名"
+
+msgid "already in use"
+msgstr "已被使用"
+
+msgid "User Type"
+msgstr "用户类型"
+
+msgid "Date Joined"
+msgstr "注册时间"
+
+msgid "Is Staff"
+msgstr "是否管理员"
+
+msgid "Session Key"
+msgstr "会话 Key"
+
+msgid "Cache Key"
+msgstr "缓存 Key"
+
+msgid "Login IP"
+msgstr "登录IP"
+
+msgid "User Agent"
+msgstr "用户代理"
+
+msgid "Expired at"
+msgstr "过期时间"
+
+msgid "User Token"
+msgstr "用户令牌"
+
+msgid "Code"
+msgstr "Code"
+
 msgid "LIST"
 msgstr "LIST"
 
-#: core/constants.py:31
 msgid "CREATE"
 msgstr "CREATE"
 
-#: core/constants.py:32
 msgid "UPDATE"
 msgstr "UPDATE"
 
-#: core/constants.py:33
 msgid "PARTIAL_UPDATE"
 msgstr "PARTIAL_UPDATE"
 
-#: core/constants.py:34
 msgid "DESTROY"
 msgstr "DESTROY"
 
-#: core/exceptions.py:54
 msgid "Request Failed"
 msgstr "请求失败"
 
-#: core/exceptions.py:118
 msgid "Server Error"
 msgstr "服务错误"
 
-#: core/exceptions.py:123
 msgid "Login Required"
 msgstr "未登录"
 
-#: core/exceptions.py:128
 msgid "Login Failed"
 msgstr "登录失败"
 
-#: core/exceptions.py:133
 msgid "Permission Denied"
 msgstr "未经授权访问"
 
-#: core/exceptions.py:138
 msgid "Operate Error"
 msgstr "异常操作"
 
-#: core/exceptions.py:143
 msgid "Resource Not Found"
 msgstr "资源未找到"
 
-#: core/exceptions.py:148
 msgid "Service Closed"
 msgstr "服务维护中"
 
-#: core/models.py:192
 msgid "Soft Delete"
 msgstr "软删除"
 
-#: core/paginations.py:19
 msgid "Invalid Page Number"
 msgstr "页码有误"
+
+msgid "TCaptcha"
+msgstr "腾讯云验证码"
+
+msgid "Success"
+msgstr "成功"
+
+msgid "Low"
+msgstr "低"
+
+msgid "High"
+msgstr "高"
+
+msgid "TCaptcha Verify Failed"
+msgstr "安全检查未通过"
+
+msgid "App Performance"
+msgstr "应用性能"

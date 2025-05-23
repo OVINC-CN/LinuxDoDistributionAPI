@@ -13,6 +13,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from apps.oauth.constants import STATE_CACHE_KEY
+from apps.oauth.exceptions import UserInactiveError
 from apps.oauth.models import OAuthUserInfo, UserProfile
 from apps.oauth.serializers import OAuthCallbackSerializer
 
@@ -65,6 +66,8 @@ class OAuthView(MainViewSet):
         # fetch user info
         resp = oauth.get(config["userinfo_url"], params={"token": token}, verify=settings.OAUTH_SSL_VERIFY)
         userinfo = OAuthUserInfo.model_validate(resp.json())
+        if not userinfo.active:
+            raise UserInactiveError()
         # save to db
         with transaction.atomic():
             user, _ = user_model.objects.get_or_create(

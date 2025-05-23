@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "apps.cel",
     "apps.home",
     "apps.oauth",
+    "apps.vcd",
 ]
 
 # MIDDLEWARE
@@ -171,7 +172,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["ovinc_client.core.renderers.APIRenderer"],
     "DEFAULT_PAGINATION_CLASS": "ovinc_client.core.paginations.NumPagination",
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M%z",
-    "DEFAULT_THROTTLE_RATES": {},
+    "DEFAULT_THROTTLE_RATES": {"receive_virtual_content": "1/s"},
     "EXCEPTION_HANDLER": "ovinc_client.core.exceptions.exception_handler",
     "UNAUTHENTICATED_USER": "ovinc_client.account.models.CustomAnonymousUser",
     "DEFAULT_AUTHENTICATION_CLASSES": ["ovinc_client.core.auth.LoginRequiredAuthenticate"],
