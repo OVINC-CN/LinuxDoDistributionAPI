@@ -1,0 +1,21 @@
+# IDE
+.idea
+.vscode
+
+# Env
+.env
+env
+
+# Python
+*.pyc
+*.db
+
+# Log
+*.log
+.report
+
+# Static
+static
+
+# Trasnlation
+*.mo

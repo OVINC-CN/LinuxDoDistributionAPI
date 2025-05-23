@@ -1,0 +1,15 @@
+{
+  "template": "https://github.com/OVINC-CN/DevTemplateDjango.git",
+  "commit": "394459732ddce4619ad7a43cb96b5e3694f97c6a",
+  "checkout": "main",
+  "context": {
+    "cookiecutter": {
+      "project_name": "LinuxDoDistributionAPI",
+      "_copy_without_render": [
+        ".github"
+      ],
+      "_template": "https://github.com/OVINC-CN/DevTemplateDjango.git"
+    }
+  },
+  "directory": null
+}
