@@ -33,7 +33,7 @@ def do_stats(self):
         stats.save(update_fields=["count"])
 
     # query db
-    share_counts = VirtualContent.objects.values("created_by_id").annotate(count=Count("*"))
+    share_counts = VirtualContent.objects.values("created_by_id").annotate(count=Count("items"))
 
     # save to db
     for share_count in share_counts:

@@ -19,7 +19,7 @@ urlpatterns = [
     path("account/oauth/", include("apps.oauth.urls")),
     path("account/", include("ovinc_client.account.urls")),
     path("", include("apps.home.urls")),
-    path("", include("apps.vcd.urls")),
+    path("virtual_content/", include("apps.vcd.urls")),
     path("", include("ovinc_client.trace.urls")),
 ]
 

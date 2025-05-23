@@ -100,7 +100,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         page = self.paginate_queryset(histories)
         # serialize
         slz = ReceiveHistorySimpleSerializer(instance=page, many=True)
-        return Response(slz.data)
+        return self.get_paginated_response(slz.data)
 
     @action(methods=["POST"], detail=True, throttle_classes=[ReceiveThrottle])
     def receive(self, request: Request, *args, **kwargs) -> Response:

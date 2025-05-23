@@ -85,7 +85,7 @@ msgid "No Stock"
 msgstr "无库存"
 
 msgid "Already Received"
-msgstr "已领取"
+msgstr "不能重复领取"
 
 msgid "Received By Someone, Please Try Again"
 msgstr "抢占失败，请重试"

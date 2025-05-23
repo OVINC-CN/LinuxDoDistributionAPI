@@ -20,7 +20,7 @@ class CreateVCSerializer(serializers.ModelSerializer):
         label=gettext_lazy("Items"),
         required=True,
         min_length=1,
-        child=serializers.CharField(max_length=MAX_CHAR_LENGTH),
+        child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
     )
     allowed_trust_levels = serializers.ListField(
         label=gettext_lazy("Allowed Trust Levels"),
@@ -60,7 +60,7 @@ class ReceiveHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReceiveHistory
-        fields = "__all__"
+        fields = ["id", "received_at", "virtual_content", "virtual_content_name", "virtual_content_item_content"]
 
 
 class ReceiveHistorySimpleSerializer(serializers.ModelSerializer):
@@ -68,4 +68,4 @@ class ReceiveHistorySimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReceiveHistory
-        fields = "__all__"
+        fields = ["id", "receiver", "received_at", "receiver__nickname"]
