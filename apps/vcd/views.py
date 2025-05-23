@@ -49,7 +49,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
 
     def list(self, request: Request, *args, **kwargs) -> Response:
         # query db
-        contents = VirtualContent.objects.filter(created_by=request.user)
+        contents = VirtualContent.objects.filter(created_by=request.user).prefetch_related("created_by")
         # page
         page = self.paginate_queryset(contents)
         # serialize
@@ -58,7 +58,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         inst = self.get_object()
-        serializer = VCSerializer(instance=inst)
+        serializer = VCSerializer(instance=inst, context={"items_count": inst.items.count()})
         return Response(serializer.data)
 
     def create(self, request: Request, *args, **kwargs) -> Response:
@@ -95,7 +95,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         # load inst
         inst: VirtualContent = self.get_object()
         # load history
-        histories = inst.receive_histories.all().prefetch_related("receiver")
+        histories = inst.receive_histories.all().prefetch_related("receiver", "receiver__profile")
         # page
         page = self.paginate_queryset(histories)
         # serialize

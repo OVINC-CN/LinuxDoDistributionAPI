@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 23:33+0800\n"
+"POT-Creation-Date: 2025-05-24 00:35+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,6 +89,9 @@ msgstr "不能重复领取"
 
 msgid "Received By Someone, Please Try Again"
 msgstr "抢占失败，请重试"
+
+msgid "Trust Level Not Match"
+msgstr "信任等级不匹配"
 
 msgid "Name"
 msgstr "名称"

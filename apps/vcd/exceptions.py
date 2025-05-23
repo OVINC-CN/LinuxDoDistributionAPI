@@ -26,3 +26,8 @@ class AlreadyReceived(APIException):
 class ReceivedBySomeone(APIException):
     default_code = status.HTTP_403_FORBIDDEN
     default_detail = gettext_lazy("Received By Someone, Please Try Again")
+
+
+class TrustLevelNotMatch(APIException):
+    default_code = status.HTTP_403_FORBIDDEN
+    default_detail = gettext_lazy("Trust Level Not Match")

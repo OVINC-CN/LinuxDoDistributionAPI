@@ -9,10 +9,14 @@ from apps.vcd.models import ReceiveHistory, VirtualContent, VirtualContentItem
 
 class VCSerializer(serializers.ModelSerializer):
     created_by_nickname = serializers.CharField(source="created_by.nick_name")
+    items_count = serializers.SerializerMethodField()
 
     class Meta:
         model = VirtualContent
         fields = "__all__"
+
+    def get_items_count(self, _: VirtualContent) -> int:
+        return self.context.get("items_count", -1)
 
 
 class CreateVCSerializer(serializers.ModelSerializer):
@@ -65,7 +69,8 @@ class ReceiveHistorySerializer(serializers.ModelSerializer):
 
 class ReceiveHistorySimpleSerializer(serializers.ModelSerializer):
     receiver__nickname = serializers.CharField(source="receiver.nick_name")
+    receiver_trust_level = serializers.IntegerField(source="receiver.profile.trust_level")
 
     class Meta:
         model = ReceiveHistory
-        fields = ["id", "receiver", "received_at", "receiver__nickname"]
+        fields = ["id", "receiver", "received_at", "receiver__nickname", "receiver_trust_level"]
