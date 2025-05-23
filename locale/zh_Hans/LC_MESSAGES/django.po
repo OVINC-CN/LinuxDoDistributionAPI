@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 18:16+0800\n"
+"POT-Creation-Date: 2025-05-23 23:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,6 +129,12 @@ msgstr "接收人"
 msgid "Received Time"
 msgstr "接收时间"
 
+msgid "Client IP"
+msgstr "客户端IP"
+
+msgid "Headers"
+msgstr "请求头"
+
 msgid "Receive History"
 msgstr "接收历史"
 
@@ -137,6 +143,9 @@ msgstr "计数"
 
 msgid "User Receive Stats"
 msgstr "用户接收统计"
+
+msgid "User Share Stats"
+msgstr "用户分享统计"
 
 msgid "Items"
 msgstr "项目"
