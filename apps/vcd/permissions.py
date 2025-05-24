@@ -14,8 +14,9 @@ class VirtualContentPermission(BasePermission):
         if view.action in ["receive"]:
             if obj.created_by == request.user:
                 return True
-            if request.user.profile.trust_level not in obj.allowed_trust_levels:
-                raise TrustLevelNotMatch()
+            if request.user.profile.trust_level in obj.allowed_trust_levels:
+                return True
+            raise TrustLevelNotMatch()
         return obj.created_by == request.user
 
 
