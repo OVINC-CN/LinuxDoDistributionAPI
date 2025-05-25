@@ -1,3 +1,4 @@
+# pylint: disable=C0103,R0801
 # Generate# pylint: disable=C0103,R0801d by Django 4.2.21 on 2025-05-25 05:32
 
 import django.db.models.deletion
