@@ -10,6 +10,7 @@ from apps.vcd.models import ReceiveHistory, VirtualContent, VirtualContentItem
 class VCSerializer(serializers.ModelSerializer):
     created_by_nickname = serializers.CharField(source="created_by.nick_name")
     items_count = serializers.SerializerMethodField()
+    is_receivable = serializers.SerializerMethodField()
 
     class Meta:
         model = VirtualContent
@@ -17,6 +18,9 @@ class VCSerializer(serializers.ModelSerializer):
 
     def get_items_count(self, _: VirtualContent) -> int:
         return self.context.get("items_count", -1)
+
+    def get_is_receivable(self, _: VirtualContent) -> bool:
+        return self.context.get("is_receivable", False)
 
 
 class CreateVCSerializer(serializers.ModelSerializer):

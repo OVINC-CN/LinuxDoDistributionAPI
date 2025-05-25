@@ -61,7 +61,15 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         inst = self.get_object()
-        serializer = VCSerializer(instance=inst, context={"items_count": inst.items.count()})
+        serializer = VCSerializer(
+            instance=inst,
+            context={
+                "items_count": inst.items.count(),
+                "is_receivable": not ReceiveHistory.objects.filter(
+                    virtual_content=inst, receiver=request.user
+                ).exists(),
+            },
+        )
         return Response(serializer.data)
 
     def create(self, request: Request, *args, **kwargs) -> Response:
