@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-24 00:35+0800\n"
+"POT-Creation-Date: 2025-05-25 12:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,6 +72,45 @@ msgstr "用户信息"
 msgid "invalid state"
 msgstr "未知的校验码"
 
+msgid "TCaptcha Module"
+msgstr "腾讯云验证码模块"
+
+msgid "Success"
+msgstr "成功"
+
+msgid "Low"
+msgstr "低"
+
+msgid "High"
+msgstr "高"
+
+msgid "TCaptcha Verify Failed"
+msgstr "安全检查未通过"
+
+msgid "Client IP"
+msgstr "客户端IP"
+
+msgid "Is Success"
+msgstr "是否成功"
+
+msgid "Params"
+msgstr "参数"
+
+msgid "Result"
+msgstr "结果"
+
+msgid "Verify At"
+msgstr "验证时间"
+
+msgid "TCaptcha History"
+msgstr "验证历史"
+
+msgid "Created at"
+msgstr "创建时间"
+
+msgid "TCaptcha Blacklist"
+msgstr "验证黑名单"
+
 msgid "Virtual Content Distribution Module"
 msgstr "虚拟内容分发模块"
 
@@ -131,9 +170,6 @@ msgstr "接收人"
 
 msgid "Received Time"
 msgstr "接收时间"
-
-msgid "Client IP"
-msgstr "客户端IP"
 
 msgid "Headers"
 msgstr "请求头"
@@ -266,18 +302,6 @@ msgstr "页码有误"
 
 msgid "TCaptcha"
 msgstr "腾讯云验证码"
-
-msgid "Success"
-msgstr "成功"
-
-msgid "Low"
-msgstr "低"
-
-msgid "High"
-msgstr "高"
-
-msgid "TCaptcha Verify Failed"
-msgstr "安全检查未通过"
 
 msgid "App Performance"
 msgstr "应用性能"

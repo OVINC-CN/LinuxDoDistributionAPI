@@ -18,8 +18,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("account/oauth/", include("apps.oauth.urls")),
     path("account/", include("ovinc_client.account.urls")),
-    path("", include("apps.home.urls")),
     path("virtual_content/", include("apps.vcd.urls")),
+    path("tcaptcha/", include("apps.tcaptcha.urls")),
+    path("", include("apps.home.urls")),
     path("", include("ovinc_client.trace.urls")),
 ]
 

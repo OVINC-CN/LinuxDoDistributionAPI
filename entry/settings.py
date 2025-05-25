@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "apps.home",
     "apps.oauth",
     "apps.vcd",
+    "apps.tcaptcha",
 ]
 
 # MIDDLEWARE
@@ -214,7 +215,10 @@ CAPTCHA_TCLOUD_KEY = os.getenv("CAPTCHA_TCLOUD_KEY", QCLOUD_SECRET_KEY)
 CAPTCHA_ENABLED = strtobool(os.getenv("CAPTCHA_ENABLED", "False"))
 CAPTCHA_APP_ID = int(os.getenv("CAPTCHA_APP_ID", "0"))
 CAPTCHA_APP_SECRET = os.getenv("CAPTCHA_APP_SECRET", "")
-CAPTCHA_APP_INFO_TIMEOUT = int(os.getenv("CAPTCHA_APP_INFO_TIMEOUT", str(60 * 10)))
+CAPTCHA_APP_INFO_TIMEOUT = int(os.getenv("CAPTCHA_APP_INFO_TIMEOUT", "30"))
+CAPTCHA_PASS_THROUGH_SECONDS = int(os.getenv("CAPTCHA_PASS_THROUGH_SECONDS", "0"))
+CAPTCHA_BLACKLIST_CHECK_SECONDS = int(os.getenv("CAPTCHA_BLACKLIST_CHECK_SECONDS", str(60 * 60 * 24)))
+CAPTCHA_BLACKLIST_COUNT = int(os.getenv("CAPTCHA_BLACKLIST_COUNT", "3"))
 
 # OAuth
 OAUTH_SSL_VERIFY = strtobool(os.getenv("OAUTH_SSL_VERIFY", "True"))

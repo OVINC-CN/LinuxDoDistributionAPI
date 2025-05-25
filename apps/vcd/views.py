@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import IntegrityError
 from django.utils import timezone
 from ovinc_client.core.utils import get_ip
@@ -13,6 +14,8 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.tcaptcha.exceptions import TCaptchaInvalid
+from apps.tcaptcha.utils import TCaptchaVerify
 from apps.vcd.exceptions import (
     AlreadyReceived,
     NoStock,
@@ -104,6 +107,11 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
 
     @action(methods=["POST"], detail=True, throttle_classes=[ReceiveThrottle])
     def receive(self, request: Request, *args, **kwargs) -> Response:
+        # validate tcaptcha
+        if settings.CAPTCHA_ENABLED:
+            tcaptcha = request.data.get("tcaptcha") or {}
+            if not TCaptchaVerify(user=request.user, user_ip=get_ip(request), tcaptcha=tcaptcha).verify():
+                raise TCaptchaInvalid()
         # load inst
         inst: VirtualContent = self.get_object()
         # check time
