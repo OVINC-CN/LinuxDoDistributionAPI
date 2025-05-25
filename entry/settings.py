@@ -172,7 +172,7 @@ LOGGING = get_logging_config_dict(log_level=LOG_LEVEL, log_format=LOG_FORMAT)
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["ovinc_client.core.renderers.APIRenderer"],
     "DEFAULT_PAGINATION_CLASS": "ovinc_client.core.paginations.NumPagination",
-    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
     "DEFAULT_THROTTLE_RATES": {"receive_virtual_content": "1/s"},
     "EXCEPTION_HANDLER": "ovinc_client.core.exceptions.exception_handler",
     "UNAUTHENTICATED_USER": "ovinc_client.account.models.CustomAnonymousUser",
