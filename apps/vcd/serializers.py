@@ -42,8 +42,8 @@ class CreateVCSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def save(self, **kwargs):
-        items = self.validated_data.pop("items")
         inst = super().save(**kwargs)
+        items = self.validated_data.pop("items")
         VirtualContentItem.objects.bulk_create(
             objs=[VirtualContentItem(virtual_content=inst, content=item) for item in items],
         )
@@ -51,6 +51,12 @@ class CreateVCSerializer(serializers.ModelSerializer):
 
 
 class UpdateVCSerializer(serializers.ModelSerializer):
+    extra_items = serializers.ListField(
+        label=gettext_lazy("Items"),
+        required=False,
+        min_length=0,
+        child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
+    )
     allowed_trust_levels = serializers.ListField(
         label=gettext_lazy("Allowed Trust Levels"),
         child=serializers.ChoiceField(choices=TrustLevelChoices.choices),
@@ -59,7 +65,17 @@ class UpdateVCSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VirtualContent
-        fields = ["name", "desc", "allowed_trust_levels", "start_time", "end_time"]
+        fields = ["name", "desc", "extra_items", "allowed_trust_levels", "start_time", "end_time"]
+
+    @transaction.atomic
+    def save(self, **kwargs):
+        inst = super().save(**kwargs)
+        items = self.validated_data.pop("extra_items", [])
+        if items:
+            VirtualContentItem.objects.bulk_create(
+                objs=[VirtualContentItem(virtual_content=inst, content=item) for item in items],
+            )
+        return inst
 
 
 class ReceiveHistorySerializer(serializers.ModelSerializer):
