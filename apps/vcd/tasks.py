@@ -3,12 +3,7 @@ from ovinc_client.core.lock import task_lock
 from ovinc_client.core.logger import celery_logger
 
 from apps.cel import app
-from apps.vcd.models import (
-    ReceiveHistory,
-    UserReceiveStats,
-    UserShareStats,
-    VirtualContent,
-)
+from apps.vcd.models import ReceiveHistory, UserReceiveStats, UserShareStats
 
 
 @app.task(bind=True)
@@ -33,13 +28,15 @@ def do_stats(self):
         stats.save(update_fields=["count"])
 
     # query db
-    share_counts = VirtualContent.objects.values("created_by_id").annotate(count=Count("items"))
+    share_counts = ReceiveHistory.objects.values("virtual_content__created_by").annotate(count=Count("*"))
 
     # save to db
     for share_count in share_counts:
-        celery_logger.info("[DoStats] Share; User: %sl Count: %d", share_count["created_by_id"], share_count["count"])
+        celery_logger.info(
+            "[DoStats] Share; User: %sl Count: %d", share_count["virtual_content__created_by"], share_count["count"]
+        )
         stats, is_create = UserShareStats.objects.get_or_create(
-            user_id=share_count["created_by_id"], defaults={"count": share_count["count"]}
+            user_id=share_count["virtual_content__created_by"], defaults={"count": share_count["count"]}
         )
         if is_create:
             continue
