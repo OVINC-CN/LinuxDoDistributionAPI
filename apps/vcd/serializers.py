@@ -6,6 +6,8 @@ from rest_framework import serializers
 from apps.oauth.constants import TrustLevelChoices
 from apps.vcd.models import ReceiveHistory, VirtualContent, VirtualContentItem
 
+MAX_ITEMS_OF_VC = 10000
+
 
 class VCSerializer(serializers.ModelSerializer):
     created_by_nickname = serializers.CharField(source="created_by.nick_name")
@@ -28,6 +30,7 @@ class CreateVCSerializer(serializers.ModelSerializer):
         label=gettext_lazy("Items"),
         required=True,
         min_length=1,
+        max_length=MAX_ITEMS_OF_VC,
         child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
     )
     allowed_trust_levels = serializers.ListField(
@@ -55,6 +58,7 @@ class UpdateVCSerializer(serializers.ModelSerializer):
         label=gettext_lazy("Items"),
         required=False,
         min_length=0,
+        max_length=MAX_ITEMS_OF_VC,
         child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
     )
     allowed_trust_levels = serializers.ListField(
