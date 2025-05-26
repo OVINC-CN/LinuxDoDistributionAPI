@@ -187,8 +187,8 @@ class VCStatsViewSet(ListMixin, MainViewSet):
 
     def list(self, request: Request, *args, **kwargs) -> Response:
         # query db
-        receive_stats = UserReceiveStats.objects.all().prefetch_related("user")[:3]
-        share_stats = UserShareStats.objects.all().prefetch_related("user")[:3]
+        receive_stats = UserReceiveStats.objects.all().prefetch_related("user")[:10]
+        share_stats = UserShareStats.objects.all().prefetch_related("user")[:10]
         # page
         # response
         return Response(
