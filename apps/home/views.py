@@ -16,6 +16,7 @@ class HomeView(MainViewSet):
     Home View
     """
 
+    enable_record_log = False
     queryset = USER_MODEL.get_queryset()
     authentication_classes = [SessionAuthenticate]
 
@@ -30,6 +31,7 @@ class I18nViewSet(MainViewSet):
     International
     """
 
+    enable_record_log = False
     authentication_classes = [SessionAuthenticate]
 
     def create(self, request, *args, **kwargs):
