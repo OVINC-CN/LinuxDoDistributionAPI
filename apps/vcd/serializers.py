@@ -7,6 +7,7 @@ from apps.oauth.constants import TrustLevelChoices
 from apps.vcd.models import ReceiveHistory, VirtualContent, VirtualContentItem
 
 MAX_ITEMS_OF_VC = 10000
+MAX_USER_WHITELIST = 10000
 
 
 class VCSerializer(serializers.ModelSerializer):
@@ -34,14 +35,34 @@ class CreateVCSerializer(serializers.ModelSerializer):
         child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
     )
     allowed_trust_levels = serializers.ListField(
+        required=True,
         label=gettext_lazy("Allowed Trust Levels"),
         child=serializers.ChoiceField(choices=TrustLevelChoices.choices),
         min_length=1,
     )
+    allowed_users = serializers.ListField(
+        label=gettext_lazy("Allowed Users"),
+        required=False,
+        default=list,
+        child=serializers.CharField(
+            label=gettext_lazy("Username"), max_length=MAX_CHAR_LENGTH, required=True, min_length=1
+        ),
+        min_length=0,
+        max_length=MAX_USER_WHITELIST,
+    )
 
     class Meta:
         model = VirtualContent
-        fields = ["name", "desc", "items", "allowed_trust_levels", "allow_same_ip", "start_time", "end_time"]
+        fields = [
+            "name",
+            "desc",
+            "items",
+            "allowed_trust_levels",
+            "allowed_users",
+            "allow_same_ip",
+            "start_time",
+            "end_time",
+        ]
 
     @transaction.atomic
     def save(self, **kwargs):
@@ -62,14 +83,34 @@ class UpdateVCSerializer(serializers.ModelSerializer):
         child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
     )
     allowed_trust_levels = serializers.ListField(
+        required=True,
         label=gettext_lazy("Allowed Trust Levels"),
         child=serializers.ChoiceField(choices=TrustLevelChoices.choices),
         min_length=1,
     )
+    allowed_users = serializers.ListField(
+        label=gettext_lazy("Allowed Users"),
+        required=False,
+        default=list,
+        child=serializers.CharField(
+            label=gettext_lazy("Username"), max_length=MAX_CHAR_LENGTH, required=True, min_length=1
+        ),
+        min_length=0,
+        max_length=MAX_USER_WHITELIST,
+    )
 
     class Meta:
         model = VirtualContent
-        fields = ["name", "desc", "extra_items", "allowed_trust_levels", "allow_same_ip", "start_time", "end_time"]
+        fields = [
+            "name",
+            "desc",
+            "extra_items",
+            "allowed_trust_levels",
+            "allowed_users",
+            "allow_same_ip",
+            "start_time",
+            "end_time",
+        ]
 
     @transaction.atomic
     def save(self, **kwargs):
@@ -82,7 +123,7 @@ class UpdateVCSerializer(serializers.ModelSerializer):
         return inst
 
 
-class ReceiveHistorySerializer(serializers.ModelSerializer):
+class ReceiveHistoryUserSerializer(serializers.ModelSerializer):
     virtual_content_name = serializers.CharField(source="virtual_content.name")
     virtual_content_item_content = serializers.CharField(source="virtual_content_item.content")
 
@@ -91,7 +132,7 @@ class ReceiveHistorySerializer(serializers.ModelSerializer):
         fields = ["id", "received_at", "virtual_content", "virtual_content_name", "virtual_content_item_content"]
 
 
-class ReceiveHistorySimpleSerializer(serializers.ModelSerializer):
+class ReceiveHistoryPublicSerializer(serializers.ModelSerializer):
     receiver__nickname = serializers.CharField(source="receiver.nick_name")
     receiver_trust_level = serializers.IntegerField(source="receiver.profile.trust_level")
 

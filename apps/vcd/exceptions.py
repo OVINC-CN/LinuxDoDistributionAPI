@@ -33,6 +33,11 @@ class TrustLevelNotMatch(APIException):
     default_detail = gettext_lazy("Trust Level Not Match")
 
 
+class UserNotInWhitelist(APIException):
+    default_code = status.HTTP_403_FORBIDDEN
+    default_detail = gettext_lazy("User Not In Whitelist")
+
+
 class SameIPReceivedBefore(APIException):
     default_code = status.HTTP_400_BAD_REQUEST
     default_detail = gettext_lazy("Same IP Received Before")

@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 
-from apps.vcd.exceptions import TrustLevelNotMatch
+from apps.vcd.exceptions import TrustLevelNotMatch, UserNotInWhitelist
 from apps.vcd.models import ReceiveHistory, VirtualContent
 
 
@@ -14,9 +14,11 @@ class VirtualContentPermission(BasePermission):
         if view.action in ["receive"]:
             if obj.created_by == request.user:
                 return True
-            if request.user.profile.trust_level in obj.allowed_trust_levels:
-                return True
-            raise TrustLevelNotMatch()
+            if request.user.profile.trust_level not in obj.allowed_trust_levels:
+                raise TrustLevelNotMatch()
+            if obj.allowed_users and request.user.username not in obj.allowed_users:
+                raise UserNotInWhitelist()
+            return True
         return obj.created_by == request.user
 
 

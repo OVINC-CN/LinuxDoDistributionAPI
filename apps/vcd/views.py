@@ -34,8 +34,8 @@ from apps.vcd.models import (
 from apps.vcd.permissions import ReceiveHistoryPermission, VirtualContentPermission
 from apps.vcd.serializers import (
     CreateVCSerializer,
-    ReceiveHistorySerializer,
-    ReceiveHistorySimpleSerializer,
+    ReceiveHistoryPublicSerializer,
+    ReceiveHistoryUserSerializer,
     UpdateVCSerializer,
     VCSerializer,
 )
@@ -61,14 +61,18 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         return self.get_paginated_response(slz.data)
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
-        inst = self.get_object()
+        inst: VirtualContent = self.get_object()
         serializer = VCSerializer(
             instance=inst,
             context={
                 "items_count": inst.items.count(),
-                "is_receivable": not ReceiveHistory.objects.filter(
-                    virtual_content=inst, receiver=request.user
-                ).exists(),
+                "is_receivable": all(
+                    [
+                        not ReceiveHistory.objects.filter(virtual_content=inst, receiver=request.user).exists(),
+                        not inst.allowed_users or request.user.username in inst.allowed_users,
+                        request.user.profile.trust_level in inst.allowed_trust_levels,
+                    ]
+                ),
             },
         )
         return Response(serializer.data)
@@ -111,7 +115,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         # page
         page = self.paginate_queryset(histories)
         # serialize
-        slz = ReceiveHistorySimpleSerializer(instance=page, many=True)
+        slz = ReceiveHistoryPublicSerializer(instance=page, many=True)
         return self.get_paginated_response(slz.data)
 
     @action(methods=["POST"], detail=True, throttle_classes=[ReceiveThrottle])
@@ -174,7 +178,7 @@ class ReceiveHistoryViewSet(ListMixin, MainViewSet):
         # page
         page = self.paginate_queryset(histories)
         # serialize
-        slz = ReceiveHistorySerializer(instance=page, many=True)
+        slz = ReceiveHistoryUserSerializer(instance=page, many=True)
         return self.get_paginated_response(slz.data)
 
 
