@@ -38,12 +38,12 @@ class CreateVCSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VirtualContent
-        fields = ["name", "desc", "items", "allowed_trust_levels", "start_time", "end_time"]
+        fields = ["name", "desc", "items", "allowed_trust_levels", "allow_same_ip", "start_time", "end_time"]
 
     @transaction.atomic
     def save(self, **kwargs):
-        inst = super().save(**kwargs)
         items = self.validated_data.pop("items")
+        inst = super().save(**kwargs)
         VirtualContentItem.objects.bulk_create(
             objs=[VirtualContentItem(virtual_content=inst, content=item) for item in items],
         )
@@ -65,12 +65,12 @@ class UpdateVCSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VirtualContent
-        fields = ["name", "desc", "extra_items", "allowed_trust_levels", "start_time", "end_time"]
+        fields = ["name", "desc", "extra_items", "allowed_trust_levels", "allow_same_ip", "start_time", "end_time"]
 
     @transaction.atomic
     def save(self, **kwargs):
-        inst = super().save(**kwargs)
         items = self.validated_data.pop("extra_items", [])
+        inst = super().save(**kwargs)
         if items:
             VirtualContentItem.objects.bulk_create(
                 objs=[VirtualContentItem(virtual_content=inst, content=item) for item in items],

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-26 00:26+0800\n"
+"POT-Creation-Date: 2025-05-26 11:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,6 +132,9 @@ msgstr "抢占失败，请重试"
 msgid "Trust Level Not Match"
 msgstr "信任等级不匹配"
 
+msgid "Same IP Received Before"
+msgstr "已有相同IP领取"
+
 msgid "Name"
 msgstr "名称"
 
@@ -140,6 +143,9 @@ msgstr "描述"
 
 msgid "Allowed Trust Levels"
 msgstr "允许的信任等级"
+
+msgid "Allow Same IP"
+msgstr "允许相同IP"
 
 msgid "Start Time"
 msgstr "开始时间"

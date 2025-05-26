@@ -1,8 +1,13 @@
+from django.core.cache import cache
 from django.db import models
 from django.db.models import Index
+from django.utils import timezone
 from django.utils.translation import gettext_lazy
+from django_redis.client import DefaultClient
 from ovinc_client.core.constants import MAX_CHAR_LENGTH, SHORT_CHAR_LENGTH
 from ovinc_client.core.models import BaseModel, ForeignKey, UniqIDField
+
+cache: DefaultClient
 
 
 class VirtualContent(BaseModel):
@@ -14,6 +19,7 @@ class VirtualContent(BaseModel):
     name = models.CharField(gettext_lazy("Name"), max_length=SHORT_CHAR_LENGTH)
     desc = models.CharField(gettext_lazy("Description"), blank=True, null=True, max_length=MAX_CHAR_LENGTH)
     allowed_trust_levels = models.JSONField(gettext_lazy("Allowed Trust Levels"))
+    allow_same_ip = models.BooleanField(gettext_lazy("Allow Same IP"), default=True)
     start_time = models.DateTimeField(gettext_lazy("Start Time"))
     end_time = models.DateTimeField(gettext_lazy("End Time"))
     created_by = ForeignKey(
@@ -32,6 +38,20 @@ class VirtualContent(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.name}:{self.id}"
+
+    @property
+    def is_enabled(self) -> bool:
+        return self.start_time <= timezone.now() <= self.end_time
+
+    def log_ip(self, ip: str) -> bool:
+        if self.allow_same_ip:
+            return True
+        return cache.set(
+            key=f"virtual_content:{self.id}:receive:ip:{ip}",
+            value=ip,
+            timeout=(self.end_time - timezone.now()).total_seconds(),
+            nx=True,
+        )
 
 
 class VirtualContentItem(BaseModel):

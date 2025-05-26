@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 from ovinc_client.core.utils import get_ip
 from ovinc_client.core.viewsets import (
@@ -20,6 +20,7 @@ from apps.vcd.exceptions import (
     AlreadyReceived,
     NoStock,
     ReceivedBySomeone,
+    SameIPReceivedBefore,
     VCDisabled,
     VCHasUserReceivedError,
 )
@@ -123,8 +124,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         # load inst
         inst: VirtualContent = self.get_object()
         # check time
-        now = timezone.now()
-        if now < inst.start_time or inst.end_time < now:
+        if not inst.is_enabled:
             raise VCDisabled()
         # check received
         if inst.receive_histories.filter(receiver=request.user).exists():
@@ -134,22 +134,26 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
             id__in=inst.receive_histories.values("virtual_content_item_id")
         ).first()
         if item is None:
-            inst.end_time = now
+            inst.end_time = timezone.now()
             inst.save(update_fields=["end_time"])
             raise NoStock()
         # save
         headers = dict(request.headers)
         headers.pop("Cookie", None)
-        try:
-            history = ReceiveHistory.objects.create(
-                virtual_content=inst,
-                virtual_content_item=item,
-                receiver=request.user,
-                client_ip=get_ip(request),
-                headers=headers,
-            )
-        except IntegrityError as err:
-            raise ReceivedBySomeone() from err
+        with transaction.atomic():
+            try:
+                history = ReceiveHistory.objects.create(
+                    virtual_content=inst,
+                    virtual_content_item=item,
+                    receiver=request.user,
+                    client_ip=get_ip(request),
+                    headers=headers,
+                )
+                # check same ip
+                if not inst.log_ip(get_ip(request)):
+                    raise SameIPReceivedBefore()
+            except IntegrityError as err:
+                raise ReceivedBySomeone() from err
         return Response(history.id)
 
 
