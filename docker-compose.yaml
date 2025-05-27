@@ -1,0 +1,58 @@
+services:
+  linux_do_helper_migrate:
+    container_name: "linux_do_helper_migrate"
+    image: "ghcr.io/ovinc-cn/linuxdodistributionapi:latest"
+    restart: "on-failure"
+    env_file:
+      - ".env"
+    command:
+      - "sh"
+      - "-c"
+      - "python manage.py migrate"
+  linux_do_helper:
+    container_name: "linux_do_helper"
+    image: "ghcr.io/ovinc-cn/linuxdodistributionapi:latest"
+    restart: "unless-stopped"
+    env_file:
+      - ".env"
+    ports:
+      - "8020:8020"
+    command:
+      - "sh"
+      - "-c"
+      - "gunicorn --bind \"[::]:8020\" -w ${WEB_PROCESSES:-1} --threads ${WEB_THREADS:-10} -k uvicorn_worker.UvicornWorker --proxy-protocol --proxy-allow-from \"*\" --forwarded-allow-ips \"*\" entry.asgi:application"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8020/" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      linux_do_helper_migrate:
+        condition: service_completed_successfully
+  linux_do_helper_beat:
+    container_name: "linux_do_helper_beat"
+    image: "ghcr.io/ovinc-cn/linuxdodistributionapi:latest"
+    restart: "unless-stopped"
+    env_file:
+      - ".env"
+    command:
+      - "sh"
+      - "-c"
+      - "python manage.py celery beat -l INFO"
+    depends_on:
+      linux_do_helper_migrate:
+        condition: service_completed_successfully
+  linux_do_helper_worker:
+    container_name: "linux_do_helper_worker"
+    image: "ghcr.io/ovinc-cn/linuxdodistributionapi:latest"
+    restart: "unless-stopped"
+    env_file:
+      - ".env"
+    command:
+      - "sh"
+      - "-c"
+      - "python manage.py celery worker -c ${WORKER_COUNT:-1} -l INFO"
+    depends_on:
+      linux_do_helper_migrate:
+        condition: service_completed_successfully
