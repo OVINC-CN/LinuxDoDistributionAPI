@@ -25,13 +25,13 @@ def do_stats(self):
 
     # save to db
     for receiver_count in receiver_counts:
-        celery_logger.info(
-            "[DoStats] Receive; User: %s; Count: %d", receiver_count["receiver_id"], receiver_count["count"]
-        )
         stats, is_create = UserReceiveStats.objects.get_or_create(
             user_id=receiver_count["receiver_id"], defaults={"count": receiver_count["count"]}
         )
         if is_create:
+            celery_logger.info(
+                "[DoStats] New Receive Rank; User: %s; Count: %d", receiver_count["receiver_id"], receiver_count["count"]
+            )
             continue
         stats.count = receiver_count["count"]
         stats.save(update_fields=["count"])
@@ -41,13 +41,13 @@ def do_stats(self):
 
     # save to db
     for share_count in share_counts:
-        celery_logger.info(
-            "[DoStats] Share; User: %sl Count: %d", share_count["virtual_content__created_by"], share_count["count"]
-        )
         stats, is_create = UserShareStats.objects.get_or_create(
             user_id=share_count["virtual_content__created_by"], defaults={"count": share_count["count"]}
         )
         if is_create:
+            celery_logger.info(
+                "[DoStats] New Share Rank; User: %sl Count: %d", share_count["virtual_content__created_by"], share_count["count"]
+            )
             continue
         stats.count = share_count["count"]
         stats.save(update_fields=["count"])
