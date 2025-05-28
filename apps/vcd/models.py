@@ -17,7 +17,7 @@ class VirtualContent(BaseModel):
 
     id = UniqIDField(gettext_lazy("ID"), primary_key=True)
     name = models.CharField(gettext_lazy("Name"), max_length=SHORT_CHAR_LENGTH)
-    desc = models.CharField(gettext_lazy("Description"), blank=True, null=True, max_length=MAX_CHAR_LENGTH)
+    desc = models.CharField(gettext_lazy("Description"), blank=True, null=True, max_length=1024)
     allowed_trust_levels = models.JSONField(gettext_lazy("Allowed Trust Levels"))
     allowed_users = models.JSONField(gettext_lazy("Allowed Users"), default=list)
     allow_same_ip = models.BooleanField(gettext_lazy("Allow Same IP"), default=True)
