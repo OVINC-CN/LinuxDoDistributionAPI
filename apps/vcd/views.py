@@ -60,6 +60,18 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         slz = VCSerializer(instance=page, many=True)
         return self.get_paginated_response(slz.data)
 
+    @action(methods=["GET"], detail=False)
+    def all(self, request: Request, *args, **kwargs) -> Response:
+        # query db
+        contents = VirtualContent.objects.filter(end_time__gt=timezone.now(), is_public_visible=True).prefetch_related(
+            "created_by"
+        )
+        # page
+        page = self.paginate_queryset(contents)
+        # serialize
+        slz = VCSerializer(instance=page, many=True)
+        return self.get_paginated_response(slz.data)
+
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
         inst: VirtualContent = self.get_object()
         serializer = VCSerializer(

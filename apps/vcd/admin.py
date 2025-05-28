@@ -11,7 +11,17 @@ from apps.vcd.models import (
 
 @admin.register(VirtualContent)
 class VirtualContentAdmin(admin.ModelAdmin):
-    list_display = ["id", "name", "allowed_trust_levels", "allow_same_ip", "start_time", "end_time", "created_by"]
+    list_display = [
+        "id",
+        "name",
+        "allowed_trust_levels",
+        "allow_same_ip",
+        "is_public_visible",
+        "start_time",
+        "end_time",
+        "created_by",
+        "created_at",
+    ]
     search_fields = ["name"]
 
 
