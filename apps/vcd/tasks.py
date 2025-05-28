@@ -30,7 +30,9 @@ def do_stats(self):
         )
         if is_create:
             celery_logger.info(
-                "[DoStats] New Receive Rank; User: %s; Count: %d", receiver_count["receiver_id"], receiver_count["count"]
+                "[DoStats] New Receive Rank; User: %s; Count: %d",
+                receiver_count["receiver_id"],
+                receiver_count["count"],
             )
             continue
         stats.count = receiver_count["count"]
@@ -46,7 +48,9 @@ def do_stats(self):
         )
         if is_create:
             celery_logger.info(
-                "[DoStats] New Share Rank; User: %sl Count: %d", share_count["virtual_content__created_by"], share_count["count"]
+                "[DoStats] New Share Rank; User: %sl Count: %d",
+                share_count["virtual_content__created_by"],
+                share_count["count"],
             )
             continue
         stats.count = share_count["count"]
