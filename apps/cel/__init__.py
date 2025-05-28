@@ -18,4 +18,9 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute="*/5"),
         "args": (),
     },
+    "close_no_stock": {
+        "task": "apps.vcd.tasks.close_no_stock",
+        "schedule": crontab(minute="*/5"),
+        "args": (),
+    },
 }

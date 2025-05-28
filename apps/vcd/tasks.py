@@ -1,9 +1,18 @@
+from typing import List
+
+from django.db import transaction
 from django.db.models import Count
+from django.utils import timezone
 from ovinc_client.core.lock import task_lock
 from ovinc_client.core.logger import celery_logger
 
 from apps.cel import app
-from apps.vcd.models import ReceiveHistory, UserReceiveStats, UserShareStats
+from apps.vcd.models import (
+    ReceiveHistory,
+    UserReceiveStats,
+    UserShareStats,
+    VirtualContent,
+)
 
 
 @app.task(bind=True)
@@ -44,3 +53,22 @@ def do_stats(self):
         stats.save(update_fields=["count"])
 
     celery_logger.info("[DoStats] End %s", self.request.id)
+
+
+@app.task(bind=True)
+@task_lock()
+def close_no_stock(self):
+    celery_logger.info("[CloseNoStock] Start %s", self.request.id)
+
+    # query db
+    virtual_contents: List[VirtualContent] = VirtualContent.objects.filter(end_time__gt=timezone.now())
+
+    # check status
+    for virtual_content in virtual_contents:
+        if virtual_content.items.count() > virtual_content.receive_histories.count():
+            continue
+        with transaction.atomic():
+            VirtualContent.objects.select_for_update().filter(id=virtual_content.id).update(end_time=timezone.now())
+        celery_logger.info("[CloseNoStock] Auto Close %s", virtual_content.id)
+
+    celery_logger.info("[CloseNoStock] End: %s", self.request.id)

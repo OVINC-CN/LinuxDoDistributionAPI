@@ -22,7 +22,7 @@ class VirtualContent(BaseModel):
     allowed_users = models.JSONField(gettext_lazy("Allowed Users"), default=list)
     allow_same_ip = models.BooleanField(gettext_lazy("Allow Same IP"), default=True)
     start_time = models.DateTimeField(gettext_lazy("Start Time"))
-    end_time = models.DateTimeField(gettext_lazy("End Time"))
+    end_time = models.DateTimeField(gettext_lazy("End Time"), db_index=True)
     created_by = ForeignKey(
         gettext_lazy("Creator"), to="account.User", on_delete=models.PROTECT, related_name="virtual_contents"
     )
