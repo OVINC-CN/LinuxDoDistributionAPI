@@ -23,4 +23,9 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute="*/5"),
         "args": (),
     },
+    "sync_blacklist": {
+        "task": "apps.tcaptcha.tasks.sync_blacklist",
+        "schedule": crontab(minute="*/5"),
+        "args": (),
+    },
 }

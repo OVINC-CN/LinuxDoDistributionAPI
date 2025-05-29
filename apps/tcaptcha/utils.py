@@ -1,9 +1,12 @@
 import datetime
 import json
+import time
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.utils import timezone
+from django_redis.client import DefaultClient
 from ovinc_client.account.models import User
 from ovinc_client.core.logger import logger
 from ovinc_client.tcaptcha.constants import (
@@ -16,9 +19,11 @@ from tencentcloud.captcha.v20190722 import captcha_client, models
 from tencentcloud.common import credential
 from tencentcloud.common.exception import TencentCloudSDKException
 
+from apps.tcaptcha.constants import BLACK_LIST_KEY_FORMAT, PASS_THROUGH_KEY_FORMAT
 from apps.tcaptcha.models import TCaptchaBlackList, TCaptchaHistory
 
-USER_MODEL: User = get_user_model()
+user_model: User = get_user_model()
+cache: DefaultClient
 
 
 class TCaptchaVerify:
@@ -26,7 +31,7 @@ class TCaptchaVerify:
     Verify TCaptcha
     """
 
-    def __init__(self, user: USER_MODEL, user_ip: str, tcaptcha: dict):
+    def __init__(self, user: user_model, user_ip: str, tcaptcha: dict):
         self._cred = credential.Credential(settings.CAPTCHA_TCLOUD_ID, settings.CAPTCHA_TCLOUD_KEY)
         self._client = captcha_client.CaptchaClient(self._cred, "")
         self.user = user
@@ -44,19 +49,11 @@ class TCaptchaVerify:
             return False
 
         # black list
-        if TCaptchaBlackList.objects.filter(user=self.user).exists():
+        if self.is_blacklisted(self.user.username):
             return False
 
         # verified before
-        if (
-            settings.CAPTCHA_PASS_THROUGH_SECONDS
-            and TCaptchaHistory.objects.filter(
-                user=self.user,
-                verify_at__gte=timezone.now() - datetime.timedelta(seconds=settings.CAPTCHA_PASS_THROUGH_SECONDS),
-                is_success=True,
-                client_ip=self.user_ip,
-            ).exists()
-        ):
+        if self.is_pass_through(self.user.username, self.user_ip):
             return True
 
         # build params
@@ -105,6 +102,9 @@ class TCaptchaVerify:
             params=self.tcaptcha,
             result=result,
         )
+        # set pass through
+        if is_valid:
+            self.set_pass_through(self.user.username, self.user_ip)
         # check failed count
         if is_valid or is_error:
             return
@@ -117,3 +117,31 @@ class TCaptchaVerify:
             >= settings.CAPTCHA_BLACKLIST_COUNT
         ):
             TCaptchaBlackList.objects.get_or_create(user=self.user)
+
+    @classmethod
+    def is_blacklisted(cls, username: str) -> bool:
+        return cache.has_key(BLACK_LIST_KEY_FORMAT.format(username=username))
+
+    @classmethod
+    def set_blacklisted(cls, username: str) -> bool:
+        return cache.set(
+            key=BLACK_LIST_KEY_FORMAT.format(username=username),
+            value=username,
+            timeout=settings.CAPTCHA_BLACKLIST_CACHE_TIMEOUT,
+        )
+
+    @classmethod
+    def is_pass_through(cls, username: str, ip: str) -> bool:
+        if not settings.CAPTCHA_PASS_THROUGH_SECONDS:
+            return False
+        return cache.has_key(PASS_THROUGH_KEY_FORMAT.format(username=username, client_ip=ip))
+
+    @classmethod
+    def set_pass_through(cls, username: str, ip: str) -> None:
+        if not settings.CAPTCHA_PASS_THROUGH_SECONDS:
+            return
+        cache.set(
+            key=PASS_THROUGH_KEY_FORMAT.format(username=username, client_ip=ip),
+            value=str(time.time()),
+            timeout=settings.CAPTCHA_PASS_THROUGH_SECONDS,
+        )

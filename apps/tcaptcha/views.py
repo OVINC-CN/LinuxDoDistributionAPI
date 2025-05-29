@@ -4,14 +4,13 @@ import datetime
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from django.conf import settings
-from django.utils import timezone
 from ovinc_client.core.utils import get_ip, uniq_id_without_time
 from ovinc_client.core.viewsets import MainViewSet
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from apps.tcaptcha.models import TCaptchaBlackList, TCaptchaHistory
+from apps.tcaptcha.utils import TCaptchaVerify
 
 
 class CaptchaViewSet(MainViewSet):
@@ -37,21 +36,13 @@ class CaptchaViewSet(MainViewSet):
             )
 
         # black list
-        if TCaptchaBlackList.objects.filter(user=request.user).exists():
+        if TCaptchaVerify.is_blacklisted(request.user.username):
             return Response(
                 data={"need_verify": True, "is_forbidden": True, "app_id": settings.CAPTCHA_APP_ID, "aid_encrypted": ""}
             )
 
         # load history
-        if (
-            settings.CAPTCHA_PASS_THROUGH_SECONDS
-            and TCaptchaHistory.objects.filter(
-                user=request.user,
-                verify_at__gte=timezone.now() - datetime.timedelta(seconds=settings.CAPTCHA_PASS_THROUGH_SECONDS),
-                is_success=True,
-                client_ip=get_ip(request),
-            ).exists()
-        ):
+        if TCaptchaVerify.is_pass_through(request.user.username, get_ip(request)):
             return Response(
                 data={
                     "need_verify": False,
