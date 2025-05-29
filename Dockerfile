@@ -3,7 +3,7 @@ FROM python:3.12.7-slim
 WORKDIR /usr/src/app
 
 RUN apt-get update &&  \
-    apt-get install -y gettext pkg-config default-libmysqlclient-dev &&  \
+    apt-get install -y gettext pkg-config default-libmysqlclient-dev gcc &&  \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /usr/src/app/
