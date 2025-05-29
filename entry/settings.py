@@ -91,7 +91,7 @@ TEMPLATES = [
 # DB and Cache
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": "dj_db_conn_pool.backends.mysql",
         "NAME": getenv_or_raise("DB_NAME"),
         "USER": getenv_or_raise("DB_USER"),
         "PASSWORD": getenv_or_raise("DB_PASSWORD"),
@@ -99,6 +99,10 @@ DATABASES = {
         "PORT": int(getenv_or_raise("DB_PORT")),
         "CONN_MAX_AGE": int(os.getenv("DB_CONN_MAX_AGE", str(60 * 60))),
         "OPTIONS": {"charset": "utf8mb4"},
+        "POOL_OPTIONS": {
+            "POOL_SIZE": int(os.getenv("DB_POOL_SIZE", "200")),
+            "MAX_OVERFLOW": int(os.getenv("DB_POOL_MAX_OVERFLOW", "800")),
+        },
     }
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

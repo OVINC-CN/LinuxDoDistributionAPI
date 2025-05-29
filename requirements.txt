@@ -25,3 +25,6 @@ tencentcloud-sdk-python==3.0.1282
 
 # oauth
 Authlib==1.6.0
+
+# db
+django-db-connection-pool[mysql]==1.2.6
