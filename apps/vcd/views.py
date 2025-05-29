@@ -50,6 +50,8 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
 
     queryset = VirtualContent.get_queryset()
     permission_classes = [VirtualContentPermission]
+    cache_user_bind = False
+    cache_timeout = 5
 
     def list(self, request: Request, *args, **kwargs) -> Response:
         # query db
@@ -62,6 +64,10 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
 
     @action(methods=["GET"], detail=False)
     def all(self, request: Request, *args, **kwargs) -> Response:
+        # load cache
+        has_cache, cached_data = self.get_cache(request, *args, **kwargs)
+        if has_cache:
+            return Response(cached_data)
         # query db
         contents = VirtualContent.objects.filter(end_time__gt=timezone.now(), is_public_visible=True).prefetch_related(
             "created_by"
@@ -70,23 +76,25 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         page = self.paginate_queryset(contents)
         # serialize
         slz = VCSerializer(instance=page, many=True)
-        return self.get_paginated_response(slz.data)
+        data = self.get_paginated_response(slz.data)
+        # save to cache
+        self.set_cache(data.data, request, *args, **kwargs)
+        return data
 
     def retrieve(self, request: Request, *args, **kwargs) -> Response:
+        # load cache
+        has_cache, cached_data = self.get_cache(request, *args, **kwargs)
+        if has_cache:
+            return Response(cached_data)
+        # load data
         inst: VirtualContent = self.get_object()
         serializer = VCSerializer(
             instance=inst,
-            context={
-                "items_count": inst.items.count(),
-                "is_receivable": all(
-                    [
-                        not ReceiveHistory.objects.filter(virtual_content=inst, receiver=request.user).exists(),
-                        not inst.allowed_users or request.user.username in inst.allowed_users,
-                        request.user.profile.trust_level in inst.allowed_trust_levels,
-                    ]
-                ),
-            },
+            context={"items_count": inst.items.count()},
         )
+        # save to cache
+        self.set_cache(serializer.data, request, *args, **kwargs)
+        # response
         return Response(serializer.data)
 
     def create(self, request: Request, *args, **kwargs) -> Response:
@@ -120,6 +128,10 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
 
     @action(methods=["GET"], detail=True)
     def receive_history(self, request: Request, *args, **kwargs) -> Response:
+        # load cache
+        has_cache, cached_data = self.get_cache(request, *args, **kwargs)
+        if has_cache:
+            return Response(cached_data)
         # load inst
         inst: VirtualContent = self.get_object()
         # load history
@@ -128,7 +140,10 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         page = self.paginate_queryset(histories)
         # serialize
         slz = ReceiveHistoryPublicSerializer(instance=page, many=True)
-        return self.get_paginated_response(slz.data)
+        data = self.get_paginated_response(slz.data)
+        # save to cache
+        self.set_cache(data.data, request, *args, **kwargs)
+        return data
 
     @action(methods=["POST"], detail=True, throttle_classes=[ReceiveThrottle])
     def receive(self, request: Request, *args, **kwargs) -> Response:
@@ -200,6 +215,9 @@ class VCStatsViewSet(ListMixin, MainViewSet):
     """
 
     queryset = UserReceiveStats.get_queryset()
+    enable_cache = True
+    cache_user_bind = False
+    cache_timeout = 60 * 5
 
     def list(self, request: Request, *args, **kwargs) -> Response:
         # query db
