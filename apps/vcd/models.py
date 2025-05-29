@@ -19,7 +19,7 @@ class VirtualContent(BaseModel):
     name = models.CharField(gettext_lazy("Name"), max_length=SHORT_CHAR_LENGTH)
     desc = models.CharField(gettext_lazy("Description"), blank=True, null=True, max_length=1024)
     allowed_trust_levels = models.JSONField(gettext_lazy("Allowed Trust Levels"))
-    allowed_users = models.JSONField(gettext_lazy("Allowed Users"), default=list)
+    allowed_users = models.JSONField(gettext_lazy("Allowed Users"), default=list, blank=True)
     allow_same_ip = models.BooleanField(gettext_lazy("Allow Same IP"), default=True)
     start_time = models.DateTimeField(gettext_lazy("Start Time"))
     end_time = models.DateTimeField(gettext_lazy("End Time"), db_index=True)
