@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django_redis.client import DefaultClient
 from ovinc_client.account.models import User
-from ovinc_client.core.auth import SessionAuthenticate
+from ovinc_client.core.auth import LoginRequiredAuthenticate, SessionAuthenticate
 from ovinc_client.core.viewsets import MainViewSet
 from rest_framework.decorators import action
 from rest_framework.request import Request
@@ -29,6 +29,16 @@ class OAuthView(MainViewSet):
 
     permission_classes = []
     authentication_classes = [SessionAuthenticate]
+
+    @action(methods=["GET"], detail=False, authentication_classes=[LoginRequiredAuthenticate])
+    def user_info(self, request: Request, *args, **kwargs) -> Response:
+        return Response(
+            {
+                "username": request.user.username,
+                "nick_name": request.user.nick_name,
+                "trust_level": request.user.profile.trust_level,
+            }
+        )
 
     @action(methods=["GET"], detail=False)
     def login(self, request: Request, *args, **kwargs) -> Response:
