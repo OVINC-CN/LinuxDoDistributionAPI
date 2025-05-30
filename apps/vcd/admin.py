@@ -16,7 +16,6 @@ class VirtualContentAdmin(admin.ModelAdmin):
         "name",
         "allowed_trust_levels",
         "allow_same_ip",
-        "is_public_visible",
         "start_time",
         "end_time",
         "created_by",

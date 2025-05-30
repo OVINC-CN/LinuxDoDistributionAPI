@@ -23,7 +23,6 @@ class VirtualContent(BaseModel):
     allow_same_ip = models.BooleanField(gettext_lazy("Allow Same IP"), default=True)
     start_time = models.DateTimeField(gettext_lazy("Start Time"))
     end_time = models.DateTimeField(gettext_lazy("End Time"), db_index=True)
-    is_public_visible = models.BooleanField(gettext_lazy("Is Public Visible"), default=False)
     created_by = ForeignKey(
         gettext_lazy("Creator"), to="account.User", on_delete=models.PROTECT, related_name="virtual_contents"
     )
@@ -36,7 +35,6 @@ class VirtualContent(BaseModel):
         ordering = ["-created_at"]
         indexes = [
             Index(fields=["created_by", "created_at"]),
-            Index(fields=["end_time", "is_public_visible"]),
         ]
 
     def __str__(self) -> str:

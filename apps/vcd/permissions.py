@@ -12,12 +12,10 @@ class VirtualContentPermission(BasePermission):
         if view.action in ["retrieve", "receive_history"]:
             return True
         if view.action in ["receive"]:
-            if obj.created_by == request.user:
-                return True
-            if request.user.profile.trust_level not in obj.allowed_trust_levels:
-                raise TrustLevelNotMatch()
             if obj.allowed_users and request.user.username not in obj.allowed_users:
                 raise UserNotInWhitelist()
+            if request.user.profile.trust_level not in obj.allowed_trust_levels:
+                raise TrustLevelNotMatch()
             return True
         return obj.created_by == request.user
 

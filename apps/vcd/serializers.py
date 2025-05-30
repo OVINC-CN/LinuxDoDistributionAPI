@@ -56,7 +56,6 @@ class CreateVCSerializer(serializers.ModelSerializer):
             "allowed_trust_levels",
             "allowed_users",
             "allow_same_ip",
-            "is_public_visible",
             "start_time",
             "end_time",
         ]
@@ -105,7 +104,6 @@ class UpdateVCSerializer(serializers.ModelSerializer):
             "allowed_trust_levels",
             "allowed_users",
             "allow_same_ip",
-            "is_public_visible",
             "start_time",
             "end_time",
         ]
