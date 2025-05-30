@@ -42,10 +42,6 @@ class VirtualContent(BaseModel):
     def __str__(self) -> str:
         return f"{self.name}:{self.id}"
 
-    @property
-    def is_enabled(self) -> bool:
-        return self.start_time <= timezone.now() <= self.end_time
-
     def log_ip(self, ip: str) -> bool:
         if self.allow_same_ip:
             return True

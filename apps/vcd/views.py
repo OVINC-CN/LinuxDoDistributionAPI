@@ -21,8 +21,9 @@ from apps.vcd.exceptions import (
     NoStock,
     ReceivedBySomeone,
     SameIPReceivedBefore,
-    VCDisabled,
+    VCClosed,
     VCHasUserReceivedError,
+    VCNotOpen,
 )
 from apps.vcd.models import (
     ReceiveHistory,
@@ -155,8 +156,11 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         # load inst
         inst: VirtualContent = self.get_object()
         # check time
-        if not inst.is_enabled:
-            raise VCDisabled()
+        now = timezone.now()
+        if now < inst.start_time:
+            raise VCNotOpen()
+        if now > inst.end_time:
+            raise VCClosed()
         # check received
         if inst.receive_histories.filter(receiver=request.user).exists():
             raise AlreadyReceived()

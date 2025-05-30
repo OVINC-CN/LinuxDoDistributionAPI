@@ -8,9 +8,14 @@ class VCHasUserReceivedError(APIException):
     default_detail = gettext_lazy("Virtual Content Has Been Received")
 
 
-class VCDisabled(APIException):
+class VCNotOpen(APIException):
     default_code = status.HTTP_403_FORBIDDEN
-    default_detail = gettext_lazy("Virtual Content Is Disabled")
+    default_detail = gettext_lazy("Virtual Content Is Not Open")
+
+
+class VCClosed(APIException):
+    default_code = status.HTTP_403_FORBIDDEN
+    default_detail = gettext_lazy("Virtual Content Is Closed")
 
 
 class NoStock(APIException):
