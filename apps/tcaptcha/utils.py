@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.utils import timezone
-from django_redis.client import DefaultClient
+from django_redis.cache import RedisCache
 from ovinc_client.account.models import User
 from ovinc_client.core.logger import logger
 from ovinc_client.tcaptcha.constants import (
@@ -23,7 +23,7 @@ from apps.tcaptcha.constants import BLACK_LIST_KEY_FORMAT, PASS_THROUGH_KEY_FORM
 from apps.tcaptcha.models import TCaptchaBlackList, TCaptchaHistory
 
 user_model: User = get_user_model()
-cache: DefaultClient
+cache: RedisCache
 
 
 class TCaptchaVerify:

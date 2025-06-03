@@ -1,11 +1,11 @@
 from django.core.cache import cache
 from django.utils.translation import gettext
-from django_redis.client import DefaultClient
+from django_redis.cache import RedisCache
 from rest_framework import serializers
 
 from apps.oauth.constants import STATE_CACHE_KEY
 
-cache: DefaultClient
+cache: RedisCache
 
 
 class OAuthCallbackSerializer(serializers.Serializer):

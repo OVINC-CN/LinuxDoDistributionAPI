@@ -1,13 +1,19 @@
+from functools import cached_property
+
 from django.core.cache import cache
 from django.db import models
 from django.db.models import Index
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
-from django_redis.client import DefaultClient
+from django_redis.cache import RedisCache
 from ovinc_client.core.constants import MAX_CHAR_LENGTH, SHORT_CHAR_LENGTH
 from ovinc_client.core.models import BaseModel, ForeignKey, UniqIDField
+from redis import Redis
+from redis.lock import Lock
 
-cache: DefaultClient
+from apps.vcd.exceptions import NoStock
+
+cache: RedisCache
 
 
 class VirtualContent(BaseModel):
@@ -21,6 +27,7 @@ class VirtualContent(BaseModel):
     allowed_trust_levels = models.JSONField(gettext_lazy("Allowed Trust Levels"))
     allowed_users = models.JSONField(gettext_lazy("Allowed Users"), default=list, blank=True)
     allow_same_ip = models.BooleanField(gettext_lazy("Allow Same IP"), default=True)
+    items_count = models.BigIntegerField(gettext_lazy("Total Items"), default=0)
     start_time = models.DateTimeField(gettext_lazy("Start Time"))
     end_time = models.DateTimeField(gettext_lazy("End Time"), db_index=True)
     created_by = ForeignKey(
@@ -40,15 +47,56 @@ class VirtualContent(BaseModel):
     def __str__(self) -> str:
         return f"{self.name}:{self.id}"
 
+    def get_ip_key(self, ip: str) -> str:
+        return f"virtual_content:{self.id}:receive:ip:{ip}"
+
     def log_ip(self, ip: str) -> bool:
         if self.allow_same_ip:
             return True
         return cache.set(
-            key=f"virtual_content:{self.id}:receive:ip:{ip}",
+            key=self.get_ip_key(ip),
             value=ip,
             timeout=(self.end_time - timezone.now()).total_seconds(),
             nx=True,
         )
+
+    @property
+    def items_key(self) -> str:
+        return f"virtual_content:{self.id}:items"
+
+    @property
+    def lock_key(self) -> str:
+        return f"virtual_content:{self.id}:lock"
+
+    @cached_property
+    def lock(self) -> Lock:
+        return Lock(redis=cache.client.get_client(), name=self.lock_key, blocking=True)
+
+    def reload_items(self) -> None:
+        self.lock.acquire()
+        try:
+            client: Redis = cache.client.get_client()
+            client.delete(self.items_key)
+            # pylint: disable=E1101
+            items = list(
+                self.items.exclude(id__in=self.receive_histories.values("virtual_content_item_id")).values_list(
+                    "id", flat=True
+                )
+            )
+            self.push_items(*items)
+        finally:
+            self.lock.release()
+
+    def push_items(self, *args) -> None:
+        if len(args) <= 0:
+            return
+        cache.client.get_client().rpush(self.items_key, *args)
+
+    def get_one_item(self) -> "VirtualContentItem":
+        item_id = cache.client.get_client().lpop(name=self.items_key)
+        if not item_id:
+            raise NoStock()
+        return VirtualContentItem.objects.get(id=item_id)
 
 
 class VirtualContentItem(BaseModel):

@@ -4,7 +4,7 @@ from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db import transaction
-from django_redis.client import DefaultClient
+from django_redis.cache import RedisCache
 from ovinc_client.account.models import User
 from ovinc_client.core.auth import LoginRequiredAuthenticate, SessionAuthenticate
 from ovinc_client.core.viewsets import MainViewSet
@@ -19,7 +19,7 @@ from apps.oauth.serializers import OAuthCallbackSerializer
 
 user_model: User = get_user_model()
 
-cache: DefaultClient
+cache: RedisCache
 
 
 class OAuthView(MainViewSet):

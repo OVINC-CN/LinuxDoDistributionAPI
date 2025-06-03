@@ -1,5 +1,9 @@
+import datetime
+
 from django.db import transaction
-from django.utils.translation import gettext_lazy
+from django.db.models import F
+from django.utils import timezone
+from django.utils.translation import gettext, gettext_lazy
 from ovinc_client.core.constants import MAX_CHAR_LENGTH
 from rest_framework import serializers
 
@@ -12,14 +16,10 @@ MAX_USER_WHITELIST = 10000
 
 class VCSerializer(serializers.ModelSerializer):
     created_by_nickname = serializers.CharField(source="created_by.nick_name")
-    items_count = serializers.SerializerMethodField()
 
     class Meta:
         model = VirtualContent
         fields = "__all__"
-
-    def get_items_count(self, _: VirtualContent) -> int:
-        return self.context.get("items_count", -1)
 
 
 class CreateVCSerializer(serializers.ModelSerializer):
@@ -63,11 +63,17 @@ class CreateVCSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def save(self, **kwargs):
         items = self.validated_data.pop("items")
-        inst = super().save(**kwargs)
+        inst = super().save(**kwargs, items_count=len(items))
         VirtualContentItem.objects.bulk_create(
             objs=[VirtualContentItem(virtual_content=inst, content=item) for item in items],
         )
+        inst.push_items(*list(inst.items.all().values_list("id", flat=True)))
         return inst
+
+    def validate_end_time(self, end_time: datetime.datetime) -> datetime.datetime:
+        if end_time < timezone.now():
+            raise serializers.ValidationError(gettext("End Time Is Before Now"))
+        return end_time
 
 
 class UpdateVCSerializer(serializers.ModelSerializer):
@@ -111,12 +117,18 @@ class UpdateVCSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def save(self, **kwargs):
         items = self.validated_data.pop("extra_items", [])
-        inst = super().save(**kwargs)
+        inst = super().save(**kwargs, items_count=F("items_count") + len(items))
         if items:
-            VirtualContentItem.objects.bulk_create(
-                objs=[VirtualContentItem(virtual_content=inst, content=item) for item in items],
-            )
+            results = []
+            for item in items:
+                results.append(VirtualContentItem.objects.create(virtual_content=inst, content=item))
+            inst.push_items(*[result.id for result in results])
         return inst
+
+    def validate_end_time(self, end_time: datetime.datetime) -> datetime.datetime:
+        if end_time < timezone.now():
+            raise serializers.ValidationError(gettext("End Time Is Before Now"))
+        return end_time
 
 
 class ReceiveHistoryUserSerializer(serializers.ModelSerializer):

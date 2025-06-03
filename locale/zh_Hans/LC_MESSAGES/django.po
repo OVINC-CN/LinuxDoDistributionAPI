@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-30 15:06+0800\n"
+"POT-Creation-Date: 2025-06-03 17:52+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,9 +129,6 @@ msgstr "无库存"
 msgid "Already Received"
 msgstr "不能重复领取"
 
-msgid "Received By Someone, Please Try Again"
-msgstr "抢占失败，请重试"
-
 msgid "Trust Level Not Match"
 msgstr "信任等级不匹配"
 
@@ -140,6 +137,9 @@ msgstr "用户不在白名单中"
 
 msgid "Same IP Received Before"
 msgstr "已有相同IP领取"
+
+msgid "VC Locked"
+msgstr "分发锁定中"
 
 msgid "Name"
 msgstr "名称"
@@ -156,14 +156,14 @@ msgstr "白名单用户"
 msgid "Allow Same IP"
 msgstr "允许相同IP"
 
+msgid "Total Items"
+msgstr "内容总数"
+
 msgid "Start Time"
 msgstr "开始时间"
 
 msgid "End Time"
 msgstr "结束时间"
-
-msgid "Is Public Visible"
-msgstr "是否公开可见"
 
 msgid "Creator"
 msgstr "创建人"
@@ -209,3 +209,6 @@ msgstr "项目"
 
 msgid "Username"
 msgstr "用户名"
+
+msgid "End Time Is Before Now"
+msgstr "结束时间不能早于当前时间"

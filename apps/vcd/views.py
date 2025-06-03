@@ -18,11 +18,10 @@ from apps.tcaptcha.exceptions import TCaptchaInvalid
 from apps.tcaptcha.utils import TCaptchaVerify
 from apps.vcd.exceptions import (
     AlreadyReceived,
-    NoStock,
-    ReceivedBySomeone,
     SameIPReceivedBefore,
     VCClosed,
     VCHasUserReceivedError,
+    VCLocked,
     VCNotOpen,
 )
 from apps.vcd.models import (
@@ -30,7 +29,6 @@ from apps.vcd.models import (
     UserReceiveStats,
     UserShareStats,
     VirtualContent,
-    VirtualContentItem,
 )
 from apps.vcd.permissions import ReceiveHistoryPermission, VirtualContentPermission
 from apps.vcd.serializers import (
@@ -70,10 +68,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
             return Response(cached_data)
         # load data
         inst: VirtualContent = self.get_object()
-        serializer = VCSerializer(
-            instance=inst,
-            context={"items_count": inst.items.count()},
-        )
+        serializer = VCSerializer(instance=inst)
         # save to cache
         self.set_cache(serializer.data, request, *args, **kwargs)
         # response
@@ -101,6 +96,8 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
     def update(self, request, *args, **kwargs) -> Response:
         # load inst
         inst: VirtualContent = self.get_object()
+        if inst.lock.locked():
+            raise VCLocked()
         # validate
         req_slz = UpdateVCSerializer(instance=inst, data=request.data, partial=True)
         req_slz.is_valid(raise_exception=True)
@@ -136,26 +133,20 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
                 raise TCaptchaInvalid()
         # load inst
         inst: VirtualContent = self.get_object()
+        if inst.lock.locked():
+            raise VCLocked()
         # check time
         now = timezone.now()
         if now < inst.start_time:
             raise VCNotOpen()
         if now > inst.end_time:
             raise VCClosed()
-        # check received
-        if inst.receive_histories.filter(receiver=request.user).exists():
-            raise AlreadyReceived()
-        # check stock
-        item: VirtualContentItem = inst.items.exclude(
-            id__in=inst.receive_histories.values("virtual_content_item_id")
-        ).first()
-        if item is None:
-            inst.end_time = timezone.now()
-            inst.save(update_fields=["end_time"])
-            raise NoStock()
-        # save
+        # init data
         headers = dict(request.headers)
         headers.pop("Cookie", None)
+        # load item
+        item = inst.get_one_item()
+        # save
         with transaction.atomic():
             try:
                 history = ReceiveHistory.objects.create(
@@ -169,7 +160,11 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
                 if not inst.log_ip(get_ip(request)):
                     raise SameIPReceivedBefore()
             except IntegrityError as err:
-                raise ReceivedBySomeone() from err
+                inst.push_items(item.id)
+                raise AlreadyReceived() from err
+            except Exception as err:
+                inst.push_items(item.id)
+                raise err
         return Response(history.id)
 
 

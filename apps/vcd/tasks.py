@@ -69,7 +69,7 @@ def close_no_stock(self):
 
     # check status
     for virtual_content in virtual_contents:
-        if virtual_content.items.count() > virtual_content.receive_histories.count():
+        if virtual_content.items_count > virtual_content.receive_histories.count():
             continue
         with transaction.atomic():
             VirtualContent.objects.select_for_update().filter(id=virtual_content.id).update(end_time=timezone.now())
