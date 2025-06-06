@@ -17,7 +17,7 @@ jobs:
       packages: write
       id-token: write
     steps:
-      - name: Set IMAGE_NAME_LOWER env
+      - name: Set Image Name
         run: echo "IMAGE_NAME_LOWER=${IMAGE_NAME,,}" >> $GITHUB_ENV
       - name: Checkout repository
         uses: actions/checkout@v4
