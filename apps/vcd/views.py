@@ -33,6 +33,7 @@ from apps.vcd.models import (
 from apps.vcd.permissions import ReceiveHistoryPermission, VirtualContentPermission
 from apps.vcd.serializers import (
     CreateVCSerializer,
+    ReceiveHistoryHideUserInfoSerializer,
     ReceiveHistoryPublicSerializer,
     ReceiveHistoryUserSerializer,
     UpdateVCSerializer,
@@ -118,7 +119,10 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         # page
         page = self.paginate_queryset(histories)
         # serialize
-        slz = ReceiveHistoryPublicSerializer(instance=page, many=True)
+        if inst.show_receiver:
+            slz = ReceiveHistoryPublicSerializer(instance=page, many=True)
+        else:
+            slz = ReceiveHistoryHideUserInfoSerializer(instance=page, many=True)
         data = self.get_paginated_response(slz.data)
         # save to cache
         self.set_cache(data.data, request, *args, **kwargs)

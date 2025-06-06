@@ -28,6 +28,7 @@ class VirtualContent(BaseModel):
     allowed_users = models.JSONField(gettext_lazy("Allowed Users"), default=list, blank=True)
     allow_same_ip = models.BooleanField(gettext_lazy("Allow Same IP"), default=True)
     items_count = models.BigIntegerField(gettext_lazy("Total Items"), default=0)
+    show_receiver = models.BooleanField(gettext_lazy("Show Receiver"), default=False)
     start_time = models.DateTimeField(gettext_lazy("Start Time"))
     end_time = models.DateTimeField(gettext_lazy("End Time"), db_index=True)
     created_by = ForeignKey(

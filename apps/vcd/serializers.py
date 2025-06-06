@@ -56,6 +56,7 @@ class CreateVCSerializer(serializers.ModelSerializer):
             "allowed_trust_levels",
             "allowed_users",
             "allow_same_ip",
+            "show_receiver",
             "start_time",
             "end_time",
         ]
@@ -110,6 +111,7 @@ class UpdateVCSerializer(serializers.ModelSerializer):
             "allowed_trust_levels",
             "allowed_users",
             "allow_same_ip",
+            "show_receiver",
             "start_time",
             "end_time",
         ]
@@ -147,3 +149,19 @@ class ReceiveHistoryPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReceiveHistory
         fields = ["id", "receiver", "received_at", "receiver__nickname", "receiver_trust_level"]
+
+
+class ReceiveHistoryHideUserInfoSerializer(serializers.ModelSerializer):
+    receiver = serializers.SerializerMethodField()
+    receiver__nickname = serializers.SerializerMethodField()
+    receiver_trust_level = serializers.IntegerField(source="receiver.profile.trust_level")
+
+    class Meta:
+        model = ReceiveHistory
+        fields = ["id", "receiver", "received_at", "receiver__nickname", "receiver_trust_level"]
+
+    def get_receiver__nickname(self, _: ReceiveHistory):
+        return ""
+
+    def get_receiver(self, _: ReceiveHistory):
+        return "******"
