@@ -28,7 +28,7 @@ class CreateVCSerializer(serializers.ModelSerializer):
         required=True,
         min_length=1,
         max_length=MAX_ITEMS_OF_VC,
-        child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
+        child=serializers.CharField(max_length=1024, required=True, min_length=1),
     )
     allowed_trust_levels = serializers.ListField(
         required=True,
@@ -83,7 +83,7 @@ class UpdateVCSerializer(serializers.ModelSerializer):
         required=False,
         min_length=0,
         max_length=MAX_ITEMS_OF_VC,
-        child=serializers.CharField(max_length=MAX_CHAR_LENGTH, required=True, min_length=1),
+        child=serializers.CharField(max_length=1024, required=True, min_length=1),
     )
     allowed_trust_levels = serializers.ListField(
         required=True,
