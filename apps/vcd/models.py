@@ -6,7 +6,7 @@ from django.db.models import Index
 from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django_redis.cache import RedisCache
-from ovinc_client.core.constants import MAX_CHAR_LENGTH, SHORT_CHAR_LENGTH
+from ovinc_client.core.constants import SHORT_CHAR_LENGTH
 from ovinc_client.core.models import BaseModel, ForeignKey, UniqIDField
 from redis import Redis
 from redis.lock import Lock
@@ -109,7 +109,7 @@ class VirtualContentItem(BaseModel):
     virtual_content = ForeignKey(
         gettext_lazy("Virtual Content"), to="VirtualContent", on_delete=models.CASCADE, related_name="items"
     )
-    content = models.CharField(gettext_lazy("Content"), max_length=MAX_CHAR_LENGTH)
+    content = models.CharField(gettext_lazy("Content"), max_length=1024)
 
     class Meta:
         verbose_name = gettext_lazy("Virtual Content Item")
