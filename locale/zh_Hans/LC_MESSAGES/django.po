@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-03 17:52+0800\n"
+"POT-Creation-Date: 2025-06-06 15:00+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,6 +158,9 @@ msgstr "允许相同IP"
 
 msgid "Total Items"
 msgstr "内容总数"
+
+msgid "Show Receiver"
+msgstr "展示接收人"
 
 msgid "Start Time"
 msgstr "开始时间"
