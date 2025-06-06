@@ -119,7 +119,7 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         # page
         page = self.paginate_queryset(histories)
         # serialize
-        if inst.show_receiver:
+        if inst.show_receiver or request.user == inst.created_by:
             slz = ReceiveHistoryPublicSerializer(instance=page, many=True)
         else:
             slz = ReceiveHistoryHideUserInfoSerializer(instance=page, many=True)
