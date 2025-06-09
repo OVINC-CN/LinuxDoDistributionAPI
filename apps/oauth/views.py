@@ -70,7 +70,9 @@ class OAuthView(MainViewSet):
             redirect_uri=request.build_absolute_uri("/account/oauth/callback/"),
         )
         # init proxy
-        proxied = {"http": settings.OAUTH_PROXY_URL, "https": settings.OAUTH_PROXY_URL} if settings.OAUTH_PROXY_URL else None
+        proxied = (
+            {"http": settings.OAUTH_PROXY_URL, "https": settings.OAUTH_PROXY_URL} if settings.OAUTH_PROXY_URL else None
+        )
         # fetch token
         token = oauth.fetch_token(
             config["access_token_url"],
