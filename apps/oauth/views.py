@@ -69,12 +69,22 @@ class OAuthView(MainViewSet):
             client_secret=config["client_secret"],
             redirect_uri=request.build_absolute_uri("/account/oauth/callback/"),
         )
+        # init proxy
+        proxied = {"http": settings.OAUTH_PROXY_URL, "https": settings.OAUTH_PROXY_URL} if settings.OAUTH_PROXY_URL else None
         # fetch token
         token = oauth.fetch_token(
-            config["access_token_url"], code=request_data["code"], verify=settings.OAUTH_SSL_VERIFY
+            config["access_token_url"],
+            code=request_data["code"],
+            verify=settings.OAUTH_SSL_VERIFY,
+            proxies=proxied,
         )
         # fetch user info
-        resp = oauth.get(config["userinfo_url"], params={"token": token}, verify=settings.OAUTH_SSL_VERIFY)
+        resp = oauth.get(
+            config["userinfo_url"],
+            params={"token": token},
+            verify=settings.OAUTH_SSL_VERIFY,
+            proxies=proxied,
+        )
         userinfo = OAuthUserInfo.model_validate(resp.json())
         if not userinfo.active:
             raise UserInactiveError()

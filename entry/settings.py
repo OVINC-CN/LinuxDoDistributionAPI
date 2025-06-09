@@ -228,6 +228,7 @@ CAPTCHA_BLACKLIST_CACHE_TIMEOUT = int(os.getenv("CAPTCHA_BLACKLIST_CACHE_TIMEOUT
 
 # OAuth
 OAUTH_SSL_VERIFY = strtobool(os.getenv("OAUTH_SSL_VERIFY", "True"))
+OAUTH_PROXY_URL = os.getenv("OAUTH_PROXY_URL") or None
 OAUTH_STATE_TIMEOUT = int(os.getenv("OAUTH_STATE_TIMEOUT") or 60 * 10)
 OAUTH2_CLIENT = {
     "provider": {
