@@ -178,7 +178,9 @@ class TCaptchaVerify:
 
     @classmethod
     def check_biz_state(cls, biz_state: str, instance_type: InstanceType, instance_id: str) -> bool:
-        value = cache.get(key=BIZ_STATE_KEY_FORMAT.format(biz_state=biz_state))
+        key = BIZ_STATE_KEY_FORMAT.format(biz_state=biz_state)
+        value = cache.get(key=key)
         if not value:
             return False
+        cache.delete(key=key)
         return value == f"{instance_type}:{instance_id}"
