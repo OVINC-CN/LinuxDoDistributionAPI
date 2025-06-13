@@ -14,6 +14,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.tcaptcha.constants import InstanceType
 from apps.tcaptcha.exceptions import TCaptchaInvalid
 from apps.tcaptcha.utils import TCaptchaVerify
 from apps.vcd.exceptions import (
@@ -133,7 +134,9 @@ class VirtualContentViewSet(RetrieveMixin, CreateMixin, UpdateMixin, DestroyMixi
         # validate tcaptcha
         if settings.CAPTCHA_ENABLED:
             tcaptcha = request.data.get("tcaptcha") or {}
-            if not TCaptchaVerify(user=request.user, user_ip=get_ip(request), tcaptcha=tcaptcha).verify():
+            if not TCaptchaVerify(user=request.user, user_ip=get_ip(request), tcaptcha=tcaptcha).verify(
+                instance_type=InstanceType.VIRTUAL_CONTENT, instance_id=kwargs["pk"]
+            ):
                 raise TCaptchaInvalid()
         # load inst
         inst: VirtualContent = self.get_object()

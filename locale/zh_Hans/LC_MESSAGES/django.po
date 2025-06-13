@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-06 15:00+0800\n"
+"POT-Creation-Date: 2025-06-13 14:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,8 +84,17 @@ msgstr "低"
 msgid "High"
 msgstr "高"
 
+msgid "Virtual Content"
+msgstr "虚拟内容"
+
 msgid "TCaptcha Verify Failed"
 msgstr "安全检查未通过"
+
+msgid "Invalid Params"
+msgstr "参数异常"
+
+msgid "Not In Time"
+msgstr "时机未到"
 
 msgid "Client IP"
 msgstr "客户端IP"
@@ -176,9 +185,6 @@ msgstr "创建时间"
 
 msgid "Updated Time"
 msgstr "更新时间"
-
-msgid "Virtual Content"
-msgstr "虚拟内容"
 
 msgid "Content"
 msgstr "内容"

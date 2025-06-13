@@ -4,12 +4,14 @@ import datetime
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from django.conf import settings
-from ovinc_client.core.utils import get_ip, uniq_id_without_time
+from ovinc_client.core.utils import get_ip, uniq_id, uniq_id_without_time
 from ovinc_client.core.viewsets import MainViewSet
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.tcaptcha.exceptions import InvalidParams
+from apps.tcaptcha.serializers import CaptchaReqSerializer
 from apps.tcaptcha.utils import TCaptchaVerify
 
 
@@ -52,6 +54,16 @@ class CaptchaViewSet(MainViewSet):
                 }
             )
 
+        # validate req
+        req_slz = CaptchaReqSerializer(data=request.query_params)
+        if not req_slz.is_valid():
+            raise InvalidParams()
+        req_data = req_slz.validated_data
+        biz_state = uniq_id()
+        TCaptchaVerify.set_biz_state(
+            biz_state=biz_state, instance_type=req_data["instance_type"], instance_id=req_data["instance_id"]
+        )
+
         # encrypt app id
         nonce = uniq_id_without_time()[:16].encode()
         cipher = AES.new((settings.CAPTCHA_APP_SECRET * 2)[:32].encode(), AES.MODE_CBC, nonce)
@@ -68,5 +80,6 @@ class CaptchaViewSet(MainViewSet):
                 "is_forbidden": False,
                 "app_id": settings.CAPTCHA_APP_ID,
                 "aid_encrypted": aid_encrypted,
+                "biz_state": biz_state,
             }
         )

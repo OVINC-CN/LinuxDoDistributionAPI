@@ -5,6 +5,7 @@ import time
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django_redis.cache import RedisCache
 from ovinc_client.account.models import User
@@ -19,8 +20,15 @@ from tencentcloud.captcha.v20190722 import captcha_client, models
 from tencentcloud.common import credential
 from tencentcloud.common.exception import TencentCloudSDKException
 
-from apps.tcaptcha.constants import BLACK_LIST_KEY_FORMAT, PASS_THROUGH_KEY_FORMAT
+from apps.tcaptcha.constants import (
+    BIZ_STATE_KEY_FORMAT,
+    BLACK_LIST_KEY_FORMAT,
+    PASS_THROUGH_KEY_FORMAT,
+    InstanceType,
+)
+from apps.tcaptcha.exceptions import NotInTime
 from apps.tcaptcha.models import TCaptchaBlackList, TCaptchaHistory
+from apps.vcd.models import VirtualContent
 
 user_model: User = get_user_model()
 cache: RedisCache
@@ -38,7 +46,7 @@ class TCaptchaVerify:
         self.user_ip = user_ip
         self.tcaptcha = tcaptcha or {}
 
-    def verify(self) -> bool:
+    def verify(self, instance_type: InstanceType, instance_id: str) -> bool:
         # not enabled
         if not settings.CAPTCHA_ENABLED:
             return True
@@ -55,6 +63,13 @@ class TCaptchaVerify:
         # verified before
         if self.is_pass_through(self.user.username, self.user_ip):
             return True
+
+        # check state
+        biz_state = self.tcaptcha.get("bizState")
+        if not biz_state or not TCaptchaVerify.check_biz_state(
+            biz_state=biz_state, instance_type=instance_type, instance_id=instance_id
+        ):
+            return False
 
         # build params
         params = {
@@ -145,3 +160,25 @@ class TCaptchaVerify:
             value=str(time.time()),
             timeout=settings.CAPTCHA_PASS_THROUGH_SECONDS,
         )
+
+    @classmethod
+    def set_biz_state(cls, biz_state: str, instance_type: InstanceType, instance_id: str) -> None:
+        # check instance
+        match instance_type:
+            case InstanceType.VIRTUAL_CONTENT:
+                vc: VirtualContent = get_object_or_404(VirtualContent, pk=instance_id)
+                if timezone.now() < vc.start_time or vc.end_time < timezone.now():
+                    raise NotInTime()
+        # set cache
+        cache.set(
+            key=BIZ_STATE_KEY_FORMAT.format(biz_state=biz_state),
+            value=f"{instance_type}:{instance_id}",
+            timeout=settings.CAPTCHA_APP_INFO_TIMEOUT,
+        )
+
+    @classmethod
+    def check_biz_state(cls, biz_state: str, instance_type: InstanceType, instance_id: str) -> bool:
+        value = cache.get(key=BIZ_STATE_KEY_FORMAT.format(biz_state=biz_state))
+        if not value:
+            return False
+        return value == f"{instance_type}:{instance_id}"
